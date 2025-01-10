@@ -14,8 +14,8 @@ const RootLayout = () => {
       <div className='rootLayout'>
         <header>
           <Link to="/" className='logo'>
-            <img src="" alt="logo" />
-            <span>COCCI AI</span>
+            <img src="./src/assets/imgs/ai.png" alt="logo" />
+            <span>COCCI GPT</span>
           </Link>
           <div className="user">
             <SignedIn>

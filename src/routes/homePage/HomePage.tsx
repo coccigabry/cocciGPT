@@ -6,7 +6,7 @@ const Homepage = () => {
     <div className='homepage'>
       <img src="./src/assets/imgs/space.jpg" alt="Photo by Gabriele Garanzelli on Unsplash" className="space" />
       <div className="left">
-        <h1>COCCI AI</h1>
+        <h1>COCCI GPT</h1>
         <h2>Ask me any question</h2>
         <h3>
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
