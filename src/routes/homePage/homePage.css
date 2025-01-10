@@ -1,0 +1,92 @@
+.homepage {
+    display: flex;
+    align-items: center;
+    gap: 100px;
+    height: 100%;
+
+    .left {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        text-align: center;
+
+        h1 {
+            font-size: 128px;
+            background: linear-gradient(to right, #217bfe, #e55571);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        h3 {
+            font-weight: 400;
+            max-width: 70%;
+        }
+
+        a {
+            padding: 15px 25px;
+            background-color: #217bfe;
+            color: white;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-top: 20px;
+
+            &:hover {
+                background-color: white;
+                color: #217bfe;
+            }
+        }
+    }
+
+    .right {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+
+        .imgContainer {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #140e2d;
+            border-radius: 50px;
+            width: 80%;
+            position: relative;
+
+            .bgContainer {
+                width: 100%;
+                height: 100%;
+                overflow: hidden;
+                position: absolute;
+                top: 0;
+                left: 0;
+                border-radius: 50px;
+
+                .bg {
+                    width: 200%;
+                    height: 100%;
+                    background: center / contain url("./src/assets/imgs/geometry.jpg");
+                    opacity: 0.2;
+                }
+            }
+            
+            .monkey {
+                width: 70%;
+                object-fit: contain;
+                z-index: 1;
+            }
+        }
+    }
+
+    .space {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        opacity: 0.1;
+        z-index: -1;
+    }
+}   
