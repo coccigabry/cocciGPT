@@ -1,4 +1,4 @@
-# Food-Ordering App (fullstack)
+# Cocci GPT App (chatGPT clone - fullstack)
 
 A chatGPT clone using React, Express, MongoDB and Google Gemini AI
 <br><br>
