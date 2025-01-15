@@ -16,6 +16,11 @@
             width: 50%;
             display: flex;
             flex-direction: column;
+            gap: 20px;
+
+            p, l {
+                margin: 10px 0;
+            }
 
             .message {
                 padding: 20px;
