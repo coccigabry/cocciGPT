@@ -1,6 +1,23 @@
+import { useAuth } from '@clerk/clerk-react'
 import './dashboardPage.css'
 
 const DashboardPage = () => {
+
+  const { userId } = useAuth()
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    const text = e.target.text.value
+    if (!text) return
+    await fetch("http://localhost:3000/api/chats", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ text, userId })
+    })
+  }
+
   return (
     <div className='dashboardPage'>
       <div className="texts">
@@ -24,8 +41,8 @@ const DashboardPage = () => {
         </div>
       </div>
       <div className="formContainer">
-        <form action="">
-          <input type="text" placeholder="How can I help you?" name="" id="" />
+        <form action="" onSubmit={handleSubmit}>
+          <input type="text" placeholder="How can I help you?" name="text" id="" />
           <button>
             <img src="./src/assets/imgs/send.png" alt="Send message icons created by Md Tanvirul Haque - Flaticon" />
           </button>
