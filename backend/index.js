@@ -6,11 +6,14 @@ import ImageKit from "imagekit";
 import Chat from './models/chat.js'
 import UserChats from './models/userChats.js'
 
+import { ClerkExpressRequireAuth } from '@clerk/clerk-sdk-node'
+
 const port = process.env.PORT || 3000
 const app = express()
 
 app.use(cors({
-    origin: process.env.CLIENT_URL
+    origin: process.env.CLIENT_URL,
+    credentials: true
 }))
 
 app.use(express.json())
@@ -35,47 +38,61 @@ app.get("/api/upload", (req, res) => {
     res.send(result);
 })
 
-app.post("/api/chats", async (req, res) => {
-    const { userId, text } = req.body
-    try {
-        // create new chat
-        const newChat = new Chat({
-            userId,
-            history: [{ role: "user", parts: [{ text }] }]
-        })
+// app.get("/api/test", ClerkExpressRequireAuth(), (req, res) => {
+//     console.log('ok')
+//     res.send("OK")
+// })
 
-        const savedChat = await newChat.save()
-
-        // check if user chats array exists
-        const userChats = await UserChats.find({userId})
-
-        // if not create a new one and add the chat in it
-        if (!userChats.length) {
-            const newUserChats = new UserChats({
+app.post(
+    "/api/chats",
+    ClerkExpressRequireAuth(),
+    async (req, res) => {
+        const { userId } = req.auth
+        const { text } = req.body
+        try {
+            // create new chat
+            const newChat = new Chat({
                 userId,
-                chats: [{
-                    _id: savedChat._id,
-                    title: text.substring(0, 40)
-                }]
+                history: [{ role: "user", parts: [{ text }] }]
             })
-            console.log(newUserChats)
-            await newUserChats.save()
-        } else {
-            // if exists, push the chat to it
-            await UserChats.updateOne({ userId }, {
-                $push: {
-                    chats: {
+
+            const savedChat = await newChat.save()
+
+            // check if user chats array exists
+            const userChats = await UserChats.find({ userId })
+
+            // if not create a new one and add the chat in it
+            if (!userChats.length) {
+                const newUserChats = new UserChats({
+                    userId,
+                    chats: [{
                         _id: savedChat._id,
                         title: text.substring(0, 40)
+                    }]
+                })
+                console.log(newUserChats)
+                await newUserChats.save()
+            } else {
+                // if exists, push the chat to it
+                await UserChats.updateOne({ userId }, {
+                    $push: {
+                        chats: {
+                            _id: savedChat._id,
+                            title: text.substring(0, 40)
+                        }
                     }
-                }
-            })
+                })
+            }
+            res.status(201).send(`Chat ${newChat._id} created`)
+        } catch (err) {
+            console.error(err)
+            res.status(500).send("Error creating chat")
         }
-        res.status(201).send(`Chat ${newChat._id} created`)
-    } catch (err) {
-        console.error(err)
-        res.status(500).send("Error creating chat")
-    }
+    })
+
+app.use((err, req, res, next) => {
+    console.error(err.stack)
+    res.status(401).send('Unauthenticated!')
 })
 
 app.listen(port, () => {
