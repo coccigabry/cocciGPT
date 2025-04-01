@@ -1,5 +1,6 @@
 import { Link, Outlet } from 'react-router-dom'
 import "./rootLayout.css"
+import logo from '../../assets/imgs/ai.png'
 import { ClerkProvider, SignedIn, UserButton } from '@clerk/clerk-react'
 import {
   QueryClient,
@@ -22,7 +23,7 @@ const RootLayout = () => {
         <div className='rootLayout'>
           <header>
             <Link to="/" className='logo'>
-              <img src="./src/assets/imgs/ai.png" alt="logo" />
+              <img src={logo} alt="logo" />
               <span>COCCI GPT</span>
             </Link>
             <div className="user">

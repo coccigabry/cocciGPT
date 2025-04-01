@@ -1,12 +1,14 @@
-import { IKContext, IKImage, IKUpload } from 'imagekitio-react';
+import { IKContext, IKUpload } from 'imagekitio-react';
 import { useRef } from 'react';
+import attachment from '../../assets/imgs/attachment.png';
+
 
 const urlEndpoint = import.meta.env.VITE_IMAGEKIT_ENDPOINT;
 const publicKey = import.meta.env.VITE_IMAGEKIT_PUBLIC_KEY;
 
 const authenticator = async () => {
     try {
-        const response = await fetch('http://localhost:3000/api/upload');
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/upload`);
 
         if (!response.ok) {
             const errorText = await response.text();
@@ -73,7 +75,7 @@ const Upload = ({ setImg }) => {
             />
             {
                 <label htmlFor="file" onClick={() => ikUploadRef.current.click()}>
-                    <img src="./src/assets/imgs/attachment.png" alt="Attachment icons created by Uniconlabs - Flaticon" />
+                    <img src={attachment} alt="Attachment icons created by Uniconlabs - Flaticon" />
                 </label>
             }
         </IKContext>

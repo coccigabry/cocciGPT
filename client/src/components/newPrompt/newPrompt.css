@@ -27,15 +27,15 @@
         border-radius: 50%;
         background-color: #605e68;
         border: none;
-        padding: 10px;
+        padding: 8px;
         display: flex;
         align-items: center;
         justify-content: center;
         cursor: pointer;
 
         img {
-            width: 16px;
-            height: 16px;
+            width: 25px;
+            height: 25px;
         }
     }
 }

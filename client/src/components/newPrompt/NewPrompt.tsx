@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 import Markdown from 'react-markdown'
 import './newPrompt.css'
+import send from '../../assets/imgs/send.png';
 import Upload from '../upload/Upload'
 import { IKImage } from 'imagekitio-react'
 import model from '../../lib/gemini.js'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 
-const NewPrompt = () => {
+const NewPrompt = ({ data }) => {
 
     const [question, setQuestion] = useState("")
     const [answer, setAnswer] = useState("")
@@ -24,35 +26,78 @@ const NewPrompt = () => {
     })
 
     const endRef = useRef(null)
+    const formRef = useRef(null)
 
     useEffect(() => {
         endRef.current.scrollIntoView({ behavior: 'smooth' })
-    }, [question, answer, img])
+    }, [data, question, answer, img])
 
-    const add = async (text) => {
-        setQuestion(text)
-        const question = Object.entries(img.aiData).length ? [img.aiData, text] : [text]
-        const result = await chat.sendMessageStream(question);
-        let answer = ""
-        for await (const chunk of result.stream) {
-            const chunkText = chunk.text()
-            answer += chunkText
-            setAnswer(answer)
+    const queryClient = useQueryClient()
+
+    const mutation = useMutation({
+        mutationFn: () => {
+            return fetch(`${import.meta.env.VITE_API_URL}/api/chats/${data._id}`, {
+                method: "PUT",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ question: question.length ? question : undefined, answer, img: img.dbData?.filePath || undefined, })
+            }).then(res => res.json())
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['chat', data._id] }).then(() => {
+                formRef.current.reset()
+                setQuestion("")
+                setAnswer("")
+                setImg({
+                    isLoading: false,
+                    error: '',
+                    dbData: {},
+                    aiData: {},
+                })
+            })
+        },
+        onError: (err) => console.log(err)
+    })
+
+    const add = async (text, isInitial) => {
+        if (!isInitial) setQuestion(text)
+
+        try {
+            const question = Object.entries(img.aiData).length ? [img.aiData, text] : [text]
+            const result = await chat.sendMessageStream(question);
+            let answer = ""
+            for await (const chunk of result.stream) {
+                const chunkText = chunk.text()
+                answer += chunkText
+                setAnswer(answer)
+            }
+
+            mutation.mutate()
+        } catch (err) {
+            console.log(err)
         }
-        setImg({
-            isLoading: false,
-            error: '',
-            dbData: {},
-            aiData: {},
-        })
     }
 
     const handleSubmit = async (e) => {
         e.preventDefault()
         const text = e.target.text.value
         if (!text) return
-        add(text)
+        add(text, false)
     }
+
+    // ! not needed in prod
+    const hasRun = useRef(false)
+    useEffect(() => {
+        if (!hasRun.current) {
+
+            if (data?.history?.length === 1) {
+                add(data.history[0].parts[0].text, true)
+            }
+        }
+        hasRun.current = true
+    }, [])
 
     return (
         <>
@@ -68,12 +113,12 @@ const NewPrompt = () => {
             {question && <div className='message user'>{question}</div>}
             {answer && <div className='message'><Markdown>{answer}</Markdown></div>}
             <div className="endChat" ref={endRef}></div>
-            <form action="" className='newForm' onSubmit={handleSubmit}>
+            <form action="" className='newForm' onSubmit={handleSubmit} ref={formRef}>
                 <Upload setImg={setImg} />
                 <input id="file" type="file" multiple={false} hidden />
                 <input type="text" placeholder="How can I help you?" name="text" id="" />
                 <button>
-                    <img src="./src/assets/imgs/send.png" alt="Send message icons created by Md Tanvirul Haque - Flaticon" />
+                    <img src={send} alt="Send message icons created by Md Tanvirul Haque - Flaticon" />
                 </button>
             </form>
         </>

@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query'
 const ChatList = () => {
 
   const { isPending, error, data } = useQuery({
-    queryKey: ['repoData'],
+    queryKey: ['userChats'],
     queryFn: () =>
       fetch(`${import.meta.env.VITE_API_URL}/api/userchats`, { credentials: "include" })
         .then((res) => res.json()
